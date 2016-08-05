@@ -1,23 +1,23 @@
 <tool id="iReport" name="iReport" version="1">
-	
+
 	<!--  Note to Galaxy Admins:
 	This wrapper contains one hidden parameter with hardcoded server location, this is currently needed for dalliance genome browser to function correctly,
-	please change this value as needed! (see below for parameter: <param name="localhost" type="hidden" value="https://bioninf-galaxian.erasmusmc.nl"/>)	
+	please change this value as needed! (see below for parameter: <param name="localhost" type="hidden" value="https://bioninf-galaxian.erasmusmc.nl"/>)
 	-->
-	
-	
+
+
 	<description> create an HTML report </description>
-	
+
         <requirements>
 		<requirement type="set_environment">REPOSITORY_PATH</requirement>
 	</requirements>
-        
-	<command interpreter="bash"> 	
-		
+
+	<command interpreter="bash">
+
 		#set $labelb64 = str($label).encode('base64').replace('\n','')
 		#set $coverimageb64 = str($coverimage).encode('base64').replace('\n','')
-		
-		iReport.sh 
+
+		iReport.sh
 		--toolpath \$REPOSITORY_PATH
 		--galaxypath ${report.files_path}
 		--htmlout ${report}
@@ -56,32 +56,32 @@
 		#for $k, $gb in enumerate($u.filetype.gbtracks)
 		--genomebrowsertrack ${gb.item}:${gb.tracklabel}:${gb.gbfiletype}
 		#end for
-		#else 
+		#else
 		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}"
 		#end if
 		#end for
 		#end for
 		--label ${labelb64}
-		
+
 	</command>
-	
+
 	<inputs>
 		<!-- this sucks, but need to hardcode where galaxy is running from for some components -->
 		<param name="localhost" type="hidden" value="https://bioinf-galaxian.erasmusmc.nl/galaxy">
 			<sanitizer>
-				<valid initial="default"> 
-					<add preset="string.printable"/> 
+				<valid initial="default">
+					<add preset="string.printable"/>
 					<remove value=":"/>
-				</valid> 
-				<mapping initial="none"> 
+				</valid>
+				<mapping initial="none">
 					<add source=":" target="==colon=="/>
-				</mapping> 
+				</mapping>
 			</sanitizer>
 		</param>
-		<param name="proxy" type="hidden" value="galaxy"/> 
+		<param name="proxy" type="hidden" value="galaxy"/>
 		<!-- /sucks -->
-		
-		
+
+
 		<param name="label" type="text" size="100" label="Name of Report" >
 			<sanitizer>
 				<valid initial="default">
@@ -93,17 +93,17 @@
 					<remove value=")"/>
 					<remove value="&lt;"/>
 					<remove value="&gt;"/>
-				</valid> 
+				</valid>
 				<mapping initial="none">
-					<add source="&lt;" target="&amp;#60;"/> 
-					<add source="&gt;" target="&amp;#62;"/> 
+					<add source="&lt;" target="&amp;#60;"/>
+					<add source="&gt;" target="&amp;#62;"/>
 					<add source=":" target="&amp;#58;"/>
-					<add source="$" target="&amp;#36;"/> 
-					<add source="~" target="&amp;#126;"/> 
-					<add source=")" target="&amp;#41;"/> 
-					<add source="(" target="&amp;#40;"/> 
+					<add source="$" target="&amp;#36;"/>
+					<add source="~" target="&amp;#126;"/>
+					<add source=")" target="&amp;#41;"/>
+					<add source="(" target="&amp;#40;"/>
 
-				</mapping> 
+				</mapping>
 			</sanitizer>
 			<validator type="empty_field" />
 		</param>
@@ -119,20 +119,20 @@
 					<remove value=")"/>
 					<remove value="&lt;"/>
 					<remove value="&gt;"/>
-				</valid> 
+				</valid>
 				<mapping initial="none">
 					<add source=" " target=""/>
-					<add source="&lt;" target="&amp;#60;"/> 
-					<add source="&gt;" target="&amp;#62;"/> 
+					<add source="&lt;" target="&amp;#60;"/>
+					<add source="&gt;" target="&amp;#62;"/>
 					<add source=":" target="&amp;#58;"/>
-					<add source="$" target="&amp;#36;"/> 
-					<add source="~" target="&amp;#126;"/> 
-					<add source=")" target="&amp;#41;"/> 
-					<add source="(" target="&amp;#40;"/> 
-				</mapping> 
+					<add source="$" target="&amp;#36;"/>
+					<add source="~" target="&amp;#126;"/>
+					<add source=")" target="&amp;#41;"/>
+					<add source="(" target="&amp;#40;"/>
+				</mapping>
 			</sanitizer>
 		</param>
-		
+
 		<param name="minwidth" type="integer" min="0" max="5000" value="1200" label="Width of page (in pixels)" />
 		<repeat name="tabs" title="Tab" default="1" >
 			<param name="tabtitle" type="text" size="50" label="Enter tab name">
@@ -147,18 +147,18 @@
 						<remove value="&gt;"/>
 						<remove value="("/>
 						<remove value=")"/>
-					</valid> 
+					</valid>
 					<mapping initial="none">
 						<add source=":" target="&amp;#58;"/>
-						<add source=" " target="&amp;#32;"/> 
-						<add source="$" target="&amp;#36;"/> 
-						<add source="~" target="&amp;#126;"/> 
-						<add source=")" target="&amp;#41;"/> 
-						<add source="(" target="&amp;#40;"/> 
-					</mapping> 
+						<add source=" " target="&amp;#32;"/>
+						<add source="$" target="&amp;#36;"/>
+						<add source="~" target="&amp;#126;"/>
+						<add source=")" target="&amp;#41;"/>
+						<add source="(" target="&amp;#40;"/>
+					</mapping>
 				</sanitizer>
 				<validator type="empty_field" />
-			</param>  
+			</param>
 			<repeat name="content" title="Content-Item" default="1">
 				<conditional name="filetype">
 					<param name="itemtype" type="select" label="Select Item Type" >
@@ -176,7 +176,7 @@
 						<option value="genomebrowser" > Genome Browser (beta) </option>
 						<validator type="empty_field" />
 					</param>
-					
+
 					<!--###########################
 					#       Text Field        #
 					########################### -->
@@ -203,32 +203,32 @@
 									<remove value="`"/>
 									<remove value="$"/>
 									<remove value="|"/>
-								</valid> 
-								<mapping initial="none"> 
-									<add source="\" target="\\"/> 
+								</valid>
+								<mapping initial="none">
+									<add source="\" target="\\"/>
 									<add source="/" target="==slash=="/>
-									<add source="&amp;" target="&amp;&amp;"/> 
-									<add source="&#xA;" target="&amp;n"/> 
-									<add source="&#xD;" target="&amp;r"/> 
-									<add source="&#x3a;" target="&amp;c"/> 
-									<add source=" " target="==space=="/> 
-									<add source="," target="==comma=="/> 
-									<add source="&lt;" target="==lt=="/> 
-									<add source="&gt;" target="==gt=="/> 
-									<add source="&apos;" target="==apos=="/> 
+									<add source="&amp;" target="&amp;&amp;"/>
+									<add source="&#xA;" target="&amp;n"/>
+									<add source="&#xD;" target="&amp;r"/>
+									<add source="&#x3a;" target="&amp;c"/>
+									<add source=" " target="==space=="/>
+									<add source="," target="==comma=="/>
+									<add source="&lt;" target="==lt=="/>
+									<add source="&gt;" target="==gt=="/>
+									<add source="&apos;" target="==apos=="/>
 									<add source="&quot;" target="==quote=="/>
 									<add source=":" target="&amp;#58;"/>
 									<add source="`" target="==backtick=="/>
 									<add source="$" target="==dollar=="/>
 									<add source="|" target="==bar=="/>
-									<add source="~" target="&amp;#126;"/> 
-								</mapping> 
+									<add source="~" target="&amp;#126;"/>
+								</mapping>
 							</sanitizer>
 							<validator type="empty_field" />
-						</param>  
+						</param>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?"/>
 					</when>
-					
+
 					<!--###########################
 					#       Text File         #
 					########################### -->
@@ -237,7 +237,7 @@
 						<param name="item" type="data" label="Text File"  help="Text file to display verbatim"/>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
 					</when>
-					
+
 					<!--###########################
 					#         HTML File       #
 					########################### -->
@@ -247,38 +247,38 @@
 						<param name="height" type="integer" min="0" max="500000" value="350" label="Height (in pixels)" help="Height of the iFrame displaying the html page"/>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
 					</when>
-					
+
 					<when value="htmlpage">
 						<param name="item" type="text" label="URL" size="100" help="Contents of webpage will be displayed in an iframe">
 							<sanitizer>
-								<valid initial="default"> 
-									<add preset="string.printable"/> 
-									<remove value="&amp;"/> 
-									<remove value=":"/>	
-									<remove value="/"/>	
+								<valid initial="default">
+									<add preset="string.printable"/>
+									<remove value="&amp;"/>
+									<remove value=":"/>
+									<remove value="/"/>
 									<remove value=" "/>
 									<remove value="$"/>
 									<remove value="~"/>
 									<remove value="("/>
 									<remove value=")"/>
-								</valid> 
-								<mapping initial="none"> 
+								</valid>
+								<mapping initial="none">
 									<add source="&amp;" target="&amp;#38;"/>
 									<add source=":" target="&amp;#58;"/>
 									<add source="/" target="&amp;#47;"/>
-									<add source=" " target="&amp;#32;"/> 
-									<add source="$" target="&amp;#36;"/> 
-									<add source="~" target="&amp;#126;"/> 
+									<add source=" " target="&amp;#32;"/>
+									<add source="$" target="&amp;#36;"/>
 									<add source="~" target="&amp;#126;"/>
-									<add source=")" target="&amp;#41;"/> 
-									<add source="(" target="&amp;#40;"/> 
-								</mapping> 
+									<add source="~" target="&amp;#126;"/>
+									<add source=")" target="&amp;#41;"/>
+									<add source="(" target="&amp;#40;"/>
+								</mapping>
 							</sanitizer>
-						</param>					
+						</param>
 						<param name="height" type="integer" min="0" max="500000" value="350" label="Height (in pixels)" help="Height of the iFrame displaying the html page"/>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
 					</when>
-					
+
 					<!--###########################
 					#          Images         #
 					########################### -->
@@ -296,7 +296,7 @@
 						</param>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
 					</when>
-					
+
 					<!--###########################
 					#          Table          #
 					########################### -->
@@ -311,57 +311,57 @@
 								<option value="Y"> Yes </option>
 							</param>
 							<when value="Y">
-								<param name="urlcol"     type="data_column"   data_ref="item" multiple="False" label="Column to turn in to weblinks"  /> 
+								<param name="urlcol"     type="data_column"   data_ref="item" multiple="False" label="Column to turn in to weblinks"  />
 								<param name="urlprefix" type="text" size="75" label="URL prefix" help="this will be placed before value in column to form the weblink. e.g. for genecards use: http://www.genecards.org/cgi-bin/carddisp.pl?gene=">
 									<sanitizer>
-										<valid initial="default"> 
-											<add preset="string.printable"/> 
-											<remove value="&amp;"/> 
-											<remove value=":"/>	
-											<remove value="/"/>	
+										<valid initial="default">
+											<add preset="string.printable"/>
+											<remove value="&amp;"/>
+											<remove value=":"/>
+											<remove value="/"/>
 											<remove value=" "/>
 											<remove value="~"/>
 											<remove value="("/>
 											<remove value=")"/>
-										</valid> 
-										<mapping initial="none"> 
+										</valid>
+										<mapping initial="none">
 											<add source="&amp;" target="==amp=="/>
 											<add source=":" target="==colon=="/>
 											<add source="/" target="//"/>
 											<add source=" " target=""/>
 											<add source="~" target="&amp;#126;"/>
-											<add source=")" target="&amp;#41;"/> 
-											<add source="(" target="&amp;#40;"/> 
-										</mapping> 
+											<add source=")" target="&amp;#41;"/>
+											<add source="(" target="&amp;#40;"/>
+										</mapping>
 									</sanitizer>
 								</param>
 								<param name="urlsuffix" type="text" size="75" label="URL suffix" help="this will be placed before value in column to form the weblink. e.g. For genecards, there is no suffix">
 									<sanitizer>
-										<valid initial="default"> 
-											<add preset="string.printable"/> 
-											<remove value="&amp;"/> 
-											<remove value="/"/> 
+										<valid initial="default">
+											<add preset="string.printable"/>
+											<remove value="&amp;"/>
+											<remove value="/"/>
 											<remove value=" "/>
 											<remove value="~"/>
 											<remove value="("/>
 											<remove value=")"/>
-										</valid> 
-										<mapping initial="none"> 
-											<add source="&amp;" target="&amp;&amp;"/> 
+										</valid>
+										<mapping initial="none">
+											<add source="&amp;" target="&amp;&amp;"/>
 											<add source="/" target="//"/>
 											<add source=" " target=""/>
 											<add source="~" target="&amp;#126;"/>
-											<add source=")" target="&amp;#41;"/> 
-											<add source="(" target="&amp;#40;"/> 
-										</mapping> 
+											<add source=")" target="&amp;#41;"/>
+											<add source="(" target="&amp;#40;"/>
+										</mapping>
 									</sanitizer>
 								</param>
 								<param name="urlitems" type="data" label="(Not yet implemented) Archive with files to link to" optional="true" help="Optional. Only if you want to link column entries to local files instead of websites" format="data,tar.gz,zip,gz,bz2,tar"/>
 							</when>
-						</conditional>	
+						</conditional>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
 					</when>
-					
+
 					<!--###########################
 					#          PDF File       #
 					########################### -->
@@ -369,7 +369,7 @@
 						<param name="item" type="data" label="PDF File" format="pdf"/>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
 					</when>
-					
+
 					<!--###########################
 					#          Links          #
 					########################### -->
@@ -378,65 +378,65 @@
 						<param name="item2" type="text" size="100" label="link text" help="text to display as a link"/>
 						<param name="ireport" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="is the link another iReport?"/>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
-					</when>				
-					
+					</when>
+
 					<when value="links">
 						<param name="item" type="data" label="Archive with files to link to" help="links will be created to each file in the archive. Supported formats: zip, gz, tar, bz2"/>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout" />
 					</when>
-					
+
 					<when value="weblink">
 						<param name="item"  type="text" size="100" label="web location to link to " help="url to link to">
 							<sanitizer>
-								<valid initial="default"> 
-									<add preset="string.printable"/> 
+								<valid initial="default">
+									<add preset="string.printable"/>
 									<remove value=" "/>
 									<remove value="&lt;"/>
 									<remove value="&gt;"/>
 									<remove value="~"/>
 									<remove value="("/>
 									<remove value=")"/>
-								</valid> 
-								<mapping initial="none"> 
+								</valid>
+								<mapping initial="none">
 									<add source=" " target=""/>
-									<add source="&lt;" target="&amp;#60;"/> 
-									<add source="&gt;" target="&amp;#62;"/> 
+									<add source="&lt;" target="&amp;#60;"/>
+									<add source="&gt;" target="&amp;#62;"/>
 									<add source=" " target="&amp;#32;"/>
-									<add source=")" target="&amp;#41;"/> 
-									<add source="(" target="&amp;#40;"/> 
-								</mapping> 
+									<add source=")" target="&amp;#41;"/>
+									<add source="(" target="&amp;#40;"/>
+								</mapping>
 							</sanitizer>
 						</param>
 						<param name="item2" type="text" size="100" label="link text" help="text to display as a link. If left empty, url itself will be the link text">
 							<sanitizer>
-								<valid initial="default"> 
-									<add preset="string.printable"/> 
+								<valid initial="default">
+									<add preset="string.printable"/>
 									<remove value="&lt;"/>
 									<remove value="&gt;"/>
 									<remove value="~"/>
 									<remove value=" "/>
 									<remove value="("/>
 									<remove value=")"/>
-								</valid> 
-								<mapping initial="none"> 
-									<add source="&lt;" target="&amp;#60;"/> 
-									<add source="&gt;" target="&amp;#62;"/> 
+								</valid>
+								<mapping initial="none">
+									<add source="&lt;" target="&amp;#60;"/>
+									<add source="&gt;" target="&amp;#62;"/>
 									<add source="~" target="&amp;#126;"/>
 									<add source=" " target="&amp;#32;"/>
-									<add source=")" target="&amp;#41;"/> 
-									<add source="(" target="&amp;#40;"/> 
-								</mapping> 
+									<add source=")" target="&amp;#41;"/>
+									<add source="(" target="&amp;#40;"/>
+								</mapping>
 							</sanitizer>
 						</param>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
 					</when>
-					
+
 					<!--###########################
 					#      Genome Browser     #
-					########################### --> 
+					########################### -->
 					<when value="genomebrowser">
-						<!-- TODO: hardcoded server location needed for dalliance to function correctly! Change as needed! -->					
-						
+						<!-- TODO: hardcoded server location needed for dalliance to function correctly! Change as needed! -->
+
 						<param name="genomebuild" type="select" label="Select Genome build to be used for Genome Browser" help="A Bio-Dalliance genome browser will be embedded into your iReport ">
 							<option value="hg18"  > hg18 </option>
 							<option value="hg19"  > hg19 </option>
@@ -453,72 +453,72 @@
 							</param>
 							<param name="tracklabel" type="text" size="100" value="mytrack" label="track label" help="give your track a name">
 								<sanitizer>
-									<valid initial="default"> 
-										<add preset="string.printable"/> 
+									<valid initial="default">
+										<add preset="string.printable"/>
 										<remove value=" "/>
 										<remove value="("/>
 										<remove value=")"/>
-									</valid> 
-									<mapping initial="none"> 
+									</valid>
+									<mapping initial="none">
 										<add source=" " target="==space=="/>
-										<add source=")" target="==bclose=="/> 
-										<add source="(" target="==bopen=="/> 
-									</mapping> 
+										<add source=")" target="==bclose=="/>
+										<add source="(" target="==bopen=="/>
+									</mapping>
 								</sanitizer>
 							</param>
-						</repeat>						
+						</repeat>
 						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout" />
 					</when>
-					
+
 				</conditional>
 			</repeat>
 		</repeat>
-		
-		
-		
+
+
+
 	</inputs>
-	
+
 	<outputs>
 		<data format="html" name="report" label="iReport: ${label}"/>
 	</outputs>
-	
-	<help>  
+
+	<help>
 		============
 		iReport
 		============
-		
+
 		iReport is a tool for the easy creation of HTML reports from Galaxy datasets. Ideal to use as final step in a pipeline to display all results in a single, interactive report.
-		
-		
+
+
 		**What's new**
-		
+
 		- MarkDown support
 		- HTML content item type
 		- Link to download entire iReport on cover page
-		
-		
-		
+
+
+
 		**How to use**
-		
+
 		- Specify report title and cover image (url)
 		- Add any number of named tabs
 		- Add content items to each tab
-		
+
 		1. Text Field
 		2. Text File
 		3. PDF File
-		4. HTML File 
-		5. Table 
+		4. HTML File
+		5. Table
 		6. Image File
 		7. Links (URL/dataset)
-		8. Links to all files in an archive dataset		
-		
+		8. Links to all files in an archive dataset
+
 		**Example History**
-		
+
 		http://galaxy-demo.trait-ctmm.cloudlet.sara.nl/u/saskia-hiltemann/h/gcc2014-ireport-about-ireport
-		
-		
-		
-		
+
+
+
+
 	</help>
 </tool>

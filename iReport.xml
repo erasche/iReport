@@ -5,6 +5,9 @@
 	please change this value as needed! (see below for parameter: <param name="localhost" type="hidden" value="https://bioninf-galaxian.erasmusmc.nl"/>)
 	-->
 
+	<macros>
+		<import>macros.xml</import>
+	</macros>
 
 	<description> create an HTML report </description>
 
@@ -13,57 +16,116 @@
 	</requirements>
 
 	<command interpreter="bash">
-
-		#set $labelb64 = str($label).encode('base64').replace('\n','')
-		#set $coverimageb64 = str($coverimage).encode('base64').replace('\n','')
-
-		iReport.sh
-		--toolpath \$REPOSITORY_PATH
-		--galaxypath ${report.files_path}
-		--htmlout ${report}
-		--minwidth ${minwidth}
-		--coverimage -${coverimageb64}
-		#for $i, $t in enumerate($tabs)
-		#set $tabtitleb64 = str($t.tabtitle).encode('base64').replace('\n','')
-		--tab ${tabtitleb64}
-		#for $j, $u in enumerate($t.content)
-		#if $u.filetype.itemtype == "image"
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${u.filetype.zoomlevel}:${u.filetype.zoomenable}:${u.filetype.align}"
-		#else if $u.filetype.itemtype == "table"
-		#if $u.filetype.collink.columnhyperlink == "Y"
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${u.filetype.fancy}:Y:${u.filetype.collink.urlcol}:${u.filetype.collink.urlprefix}:${u.filetype.collink.urlsuffix}:${u.filetype.collink.urlitems}:${u.filetype.minw}:${u.filetype.minh}"
-		#else
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${u.filetype.fancy}:N:${u.filetype.minw}:${u.filetype.minh}"
-		#end if
-		#else if $u.filetype.itemtype == "link"
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${__app__.security.encode_id($u.filetype.item.id)}:${u.filetype.ireport}:${u.filetype.item2}:${localhost}:${proxy}"
-		#else if $u.filetype.itemtype == "weblink"
-		#set $itemb64 = str($u.filetype.item).encode('base64').replace('\n','')
-		#set $item2b64 = str($u.filetype.item2).encode('base64').replace('\n','')
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${itemb64}:${u.filetype.break}:${item2b64}"
-		#else if $u.filetype.itemtype == "text"
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${u.filetype.md}"
-		#else if $u.filetype.itemtype == "textfile"
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${u.filetype.md}"
-		#else if $u.filetype.itemtype == "htmlfile"
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${u.filetype.height}:${__app__.security.encode_id($u.filetype.item.id)}:${u.filetype.ireport}:${localhost}:${proxy}"
-		#else if $u.filetype.itemtype == "htmlpage"
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}:${u.filetype.height}"
-		#else if $u.filetype.itemtype == "genomebrowser"
-		#set $itemb64 = str($u.filetype.initialview).encode('base64').replace('\n','')
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.genomebuild}:${u.filetype.break}:${__app__.security.encode_id($report.id)}:${localhost}:${itemb64}"
-		--newgb "-"
-		#for $k, $gb in enumerate($u.filetype.gbtracks)
-		--genomebrowsertrack ${gb.item}:${gb.tracklabel}:${gb.gbfiletype}
-		#end for
-		#else
-		--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}"
-		#end if
-		#end for
-		#end for
-		--label ${labelb64}
-
+		iReport.py
+			$main
+			--htmlDir $report.files_path
+			> $report
 	</command>
+	<configfiles>
+		<configfile name="main">
+		<![CDATA[
+#def b64($value)
+#set $out = str($value).encode('base64').replace('\n','')
+$out
+#end def
+
+		<iReport toolPath="$__tool_dir__" minWidth="${minWidth}" coverImage="$b64($coverimage)" label="$b64($label)">
+			#for $i, $t in enumerate($tabs)
+			<tab title="$b64($t.tabtitle)">
+				#for $j, $u in enumerate($t.content)
+					#if $u.filetype.itemtype == "image"
+					<image
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						zoom="${u.filetype.zoomlevel}"
+						zoomEnable="${u.filetype.zoomenable}"
+						align="${u.filetype.align}"
+						/>
+					#else if $u.filetype.itemtype == "table"
+					<table
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						fancy="${u.filetype.fancy}"
+						minw="${u.filetype.minw}"
+						minh="${u.filetype.minh}"
+
+						collink="${u.filetype.collink.columnhyperlink}"
+						#if $u.filetype.collink.columnhyperlink == "Y"
+						collink_urlcol="${u.filetype.collink.urlcol}"
+						collink_urlprefix="${u.filetype.collink.urlprefix}"
+						collink_urlsuffix="${u.filetype.collink.urlsuffix}"
+						collink_urlitems="${u.filetype.collink.urlitems}"
+						#end if
+						/>
+					#else if $u.filetype.itemtype == "link"
+					<link
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						encoded_id="${__app__.security.encode_id($u.filetype.item.id)}"
+						ireport="${u.filetype.ireport}"
+						item2="${u.filetype.item2}"
+						localhost="${localhost}"
+						proxy="${proxy}"
+						/>
+					#else if $u.filetype.itemtype == "weblink"
+					<weblink
+						obj="$b64($u.filetype.item)"
+						break="${u.filetype.break}"
+						item2="$b64($u.filetype.item2)"
+						/>
+					#else if $u.filetype.itemtype == "text"
+					<text
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						markdown="${u.filetype.md}"
+						/>
+					#else if $u.filetype.itemtype == "textfile"
+					<textfile
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						markdown="${u.filetype.md}"
+						/>
+					#else if $u.filetype.itemtype == "htmlfile"
+					<htmlfile
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						height="${u.filetype.height}"
+						encoded_id="${__app__.security.encode_id($u.filetype.item.id)}"
+						ireport="${u.filetype.ireport}"
+						localhost="${localhost}"
+						proxy="${proxy}"
+						/>
+					#else if $u.filetype.itemtype == "htmlpage"
+					<htmlpage
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						height="${u.filetype.height}"
+						/>
+					#else if $u.filetype.itemtype == "genomebrowser"
+					<genomebrowser
+						obj="${u.filetype.genomebuild}"
+						break="${u.filetype.break}"
+						encoded_id="${__app__.security.encode_id($report.id)}"
+						localhost="${localhost}"
+						initialview="$b64($u.filetype.initialview)">
+						#for $k, $gb in enumerate($u.filetype.gbtracks)
+						<track item="${gb.item}" label="${gb.tracklabel}" type="${gb.gbfiletype}" />
+						#end for
+					</genomebrowser>
+					#else
+					<item
+						obj="${u.filetype.item}"
+						break="${u.filetype.break}"
+						/>
+					--item "${t.tabtitle}:${u.filetype.itemtype}:${u.filetype.item}:${u.filetype.break}"
+					#end if
+				#end for
+			</tab>
+			#end for
+		</iReport>
+		]]>
+		</configfile>
+	</configfiles>
 
 	<inputs>
 		<!-- this sucks, but need to hardcode where galaxy is running from for some components -->
@@ -83,80 +145,17 @@
 
 
 		<param name="label" type="text" size="100" label="Name of Report" >
-			<sanitizer>
-				<valid initial="default">
-					<add preset="string.printable"/>
-					<remove value=":"/>
-					<remove value="$"/>
-					<remove value="~"/>
-					<remove value="("/>
-					<remove value=")"/>
-					<remove value="&lt;"/>
-					<remove value="&gt;"/>
-				</valid>
-				<mapping initial="none">
-					<add source="&lt;" target="&amp;#60;"/>
-					<add source="&gt;" target="&amp;#62;"/>
-					<add source=":" target="&amp;#58;"/>
-					<add source="$" target="&amp;#36;"/>
-					<add source="~" target="&amp;#126;"/>
-					<add source=")" target="&amp;#41;"/>
-					<add source="(" target="&amp;#40;"/>
-
-				</mapping>
-			</sanitizer>
+			<expand macro="sanitizer" />
 			<validator type="empty_field" />
 		</param>
 		<param name="coverimage" type="text" size="100" label="Link to cover image" help="Optional. A default image will be used if not specified">
-			<sanitizer>
-				<valid initial="default">
-					<add preset="string.printable"/>
-					<remove value=" "/>
-					<remove value=":"/>
-					<remove value="$"/>
-					<remove value="~"/>
-					<remove value="("/>
-					<remove value=")"/>
-					<remove value="&lt;"/>
-					<remove value="&gt;"/>
-				</valid>
-				<mapping initial="none">
-					<add source=" " target=""/>
-					<add source="&lt;" target="&amp;#60;"/>
-					<add source="&gt;" target="&amp;#62;"/>
-					<add source=":" target="&amp;#58;"/>
-					<add source="$" target="&amp;#36;"/>
-					<add source="~" target="&amp;#126;"/>
-					<add source=")" target="&amp;#41;"/>
-					<add source="(" target="&amp;#40;"/>
-				</mapping>
-			</sanitizer>
+			<expand macro="sanitizer" />
 		</param>
 
 		<param name="minwidth" type="integer" min="0" max="5000" value="1200" label="Width of page (in pixels)" />
 		<repeat name="tabs" title="Tab" default="1" >
 			<param name="tabtitle" type="text" size="50" label="Enter tab name">
-				<sanitizer>
-					<valid initial="default">
-						<add preset="string.printable"/>
-						<remove value=":"/>
-						<remove value=" "/>
-						<remove value="$"/>
-						<remove value="~"/>
-						<remove value="&lt;"/>
-						<remove value="&gt;"/>
-						<remove value="("/>
-						<remove value=")"/>
-					</valid>
-					<mapping initial="none">
-						<add source=":" target="&amp;#58;"/>
-						<add source=" " target="&amp;#32;"/>
-						<add source="$" target="&amp;#36;"/>
-						<add source="~" target="&amp;#126;"/>
-						<add source=")" target="&amp;#41;"/>
-						<add source="(" target="&amp;#40;"/>
-					</mapping>
-				</sanitizer>
+				<expand macro="sanitizer" />
 				<validator type="empty_field" />
 			</param>
 			<repeat name="content" title="Content-Item" default="1">
@@ -181,61 +180,21 @@
 					#       Text Field        #
 					########################### -->
 					<when value="text">
-						<param name="md" type="boolean" truevalue="Y" falsevalue="n" checked="false" label="Text in MarkDown format?" help="If checked, text file or field will be interpreted as markdown"/>
+						<expand macro="md" />
 						<param name="item" type="text" area="true" size="10x100" label="Text to display." help="can explicitly add whitespace adding \n in your text for a newline or \t for a tab. HTML tags em, strong, b, i, h1-h6 tags" >
-							<sanitizer>
-								<valid initial="default">
-									<add preset="string.printable"/>
-									<remove value="\"/>
-									<remove value="/"/>
-									<remove value=","/>
-									<remove value=":"/>
-									<remove value="~"/>
-									<remove value="&lt;"/>
-									<remove value="&gt;"/>
-									<remove value="&apos;"/>
-									<remove value="&quot;"/>
-									<remove value="&#xA;"/>
-									<remove value="&#xD;"/>
-									<remove value="&amp;"/>
-									<remove value="&#x3a;"/>
-									<remove value=" "/>
-									<remove value="`"/>
-									<remove value="$"/>
-									<remove value="|"/>
-								</valid>
-								<mapping initial="none">
-									<add source="\" target="\\"/>
-									<add source="/" target="==slash=="/>
-									<add source="&amp;" target="&amp;&amp;"/>
-									<add source="&#xA;" target="&amp;n"/>
-									<add source="&#xD;" target="&amp;r"/>
-									<add source="&#x3a;" target="&amp;c"/>
-									<add source=" " target="==space=="/>
-									<add source="," target="==comma=="/>
-									<add source="&lt;" target="==lt=="/>
-									<add source="&gt;" target="==gt=="/>
-									<add source="&apos;" target="==apos=="/>
-									<add source="&quot;" target="==quote=="/>
-									<add source=":" target="&amp;#58;"/>
-									<add source="`" target="==backtick=="/>
-									<add source="$" target="==dollar=="/>
-									<add source="|" target="==bar=="/>
-									<add source="~" target="&amp;#126;"/>
-								</mapping>
-							</sanitizer>
+							<expand macro="sanitizer2" />
 							<validator type="empty_field" />
 						</param>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?"/>
+						<expand macro="break" />
 					</when>
 
 					<!--###########################
 					#       Text File         #
 					########################### -->
 					<when value="textfile">
-						<param name="md" type="boolean" truevalue="Y" falsevalue="n" checked="false" label="Text in MarkDown format?" help="If checked, text file or field will be interpreted as markdown. Will use pandoc if this is installed on the system, else uses a custom script"/>
+						<expand macro="md" />
 						<param name="item" type="data" label="Text File"  help="Text file to display verbatim"/>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<!--###########################
@@ -245,38 +204,15 @@
 						<param name="item" type="data" label="HTML File" help="Contents of html file will be displayed in an iframe"/>
 						<param name="ireport" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="is the link another iReport?"/>
 						<param name="height" type="integer" min="0" max="500000" value="350" label="Height (in pixels)" help="Height of the iFrame displaying the html page"/>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<when value="htmlpage">
 						<param name="item" type="text" label="URL" size="100" help="Contents of webpage will be displayed in an iframe">
-							<sanitizer>
-								<valid initial="default">
-									<add preset="string.printable"/>
-									<remove value="&amp;"/>
-									<remove value=":"/>
-									<remove value="/"/>
-									<remove value=" "/>
-									<remove value="$"/>
-									<remove value="~"/>
-									<remove value="("/>
-									<remove value=")"/>
-								</valid>
-								<mapping initial="none">
-									<add source="&amp;" target="&amp;#38;"/>
-									<add source=":" target="&amp;#58;"/>
-									<add source="/" target="&amp;#47;"/>
-									<add source=" " target="&amp;#32;"/>
-									<add source="$" target="&amp;#36;"/>
-									<add source="~" target="&amp;#126;"/>
-									<add source="~" target="&amp;#126;"/>
-									<add source=")" target="&amp;#41;"/>
-									<add source="(" target="&amp;#40;"/>
-								</mapping>
-							</sanitizer>
+							<expand macro="url_sanitizer" />
 						</param>
 						<param name="height" type="integer" min="0" max="500000" value="350" label="Height (in pixels)" help="Height of the iFrame displaying the html page"/>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<!--###########################
@@ -294,7 +230,7 @@
 							<!--<option value="top"> top </option>
 							<option value="bottom"> bottom </option>-->
 						</param>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<!--###########################
@@ -359,7 +295,7 @@
 								<param name="urlitems" type="data" label="(Not yet implemented) Archive with files to link to" optional="true" help="Optional. Only if you want to link column entries to local files instead of websites" format="data,tar.gz,zip,gz,bz2,tar"/>
 							</when>
 						</conditional>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<!--###########################
@@ -367,7 +303,7 @@
 					########################### -->
 					<when value="pdf">
 						<param name="item" type="data" label="PDF File" format="pdf"/>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<!--###########################
@@ -377,12 +313,12 @@
 						<param name="item" type="data" label="File to link to" />
 						<param name="item2" type="text" size="100" label="link text" help="text to display as a link"/>
 						<param name="ireport" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="is the link another iReport?"/>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<when value="links">
 						<param name="item" type="data" label="Archive with files to link to" help="links will be created to each file in the archive. Supported formats: zip, gz, tar, bz2"/>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout" />
+						<expand macro="break" />
 					</when>
 
 					<when value="weblink">
@@ -428,7 +364,7 @@
 								</mapping>
 							</sanitizer>
 						</param>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout"/>
+						<expand macro="break" />
 					</when>
 
 					<!--###########################
@@ -467,9 +403,8 @@
 								</sanitizer>
 							</param>
 						</repeat>
-						<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?" help="Insert a line break to force next item to appear below this one. If unchecked, the browser will decide layout" />
+						<expand macro="break" />
 					</when>
-
 				</conditional>
 			</repeat>
 		</repeat>

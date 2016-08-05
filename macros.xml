@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<macros>
+	<xml name="md">
+		<param name="md" type="boolean" truevalue="Y" falsevalue="n" checked="false" label="Text in MarkDown format?" help="If checked, text file or field will be interpreted as markdown"/>
+	</xml>
+	<xml name="break">
+		<param name="break" type="boolean" checked="False" truevalue="Y" falsevalue="N" label="Insert break after item?"/>
+	</xml>
+	<xml name="sanitizer">
+		<sanitizer>
+			<valid initial="default">
+				<add preset="string.printable"/>
+				<remove value=":"/>
+				<remove value="$"/>
+				<remove value="~"/>
+				<remove value="("/>
+				<remove value=")"/>
+				<remove value="&lt;"/>
+				<remove value="&gt;"/>
+			</valid>
+			<mapping initial="none">
+				<add source="&lt;" target="&amp;#60;"/>
+				<add source="&gt;" target="&amp;#62;"/>
+				<add source=":" target="&amp;#58;"/>
+				<add source="$" target="&amp;#36;"/>
+				<add source="~" target="&amp;#126;"/>
+				<add source=")" target="&amp;#41;"/>
+				<add source="(" target="&amp;#40;"/>
+
+			</mapping>
+		</sanitizer>
+	</xml>
+	<xml name="sanitizer2">
+		<sanitizer>
+			<valid initial="default">
+				<add preset="string.printable"/>
+				<remove value="\"/>
+				<remove value="/"/>
+				<remove value=","/>
+				<remove value=":"/>
+				<remove value="~"/>
+				<remove value="&lt;"/>
+				<remove value="&gt;"/>
+				<remove value="&apos;"/>
+				<remove value="&quot;"/>
+				<remove value="&#xA;"/>
+				<remove value="&#xD;"/>
+				<remove value="&amp;"/>
+				<remove value="&#x3a;"/>
+				<remove value=" "/>
+				<remove value="`"/>
+				<remove value="$"/>
+				<remove value="|"/>
+			</valid>
+			<mapping initial="none">
+				<add source="\" target="\\"/>
+				<add source="/" target="==slash=="/>
+				<add source="&amp;" target="&amp;&amp;"/>
+				<add source="&#xA;" target="&amp;n"/>
+				<add source="&#xD;" target="&amp;r"/>
+				<add source="&#x3a;" target="&amp;c"/>
+				<add source=" " target="==space=="/>
+				<add source="," target="==comma=="/>
+				<add source="&lt;" target="==lt=="/>
+				<add source="&gt;" target="==gt=="/>
+				<add source="&apos;" target="==apos=="/>
+				<add source="&quot;" target="==quote=="/>
+				<add source=":" target="&amp;#58;"/>
+				<add source="`" target="==backtick=="/>
+				<add source="$" target="==dollar=="/>
+				<add source="|" target="==bar=="/>
+				<add source="~" target="&amp;#126;"/>
+			</mapping>
+		</sanitizer>
+	</xml>
+	<xml name="url_sanitizer">
+		<sanitizer>
+			<valid initial="default">
+				<add preset="string.printable"/>
+				<remove value="&amp;"/>
+				<remove value=":"/>
+				<remove value="/"/>
+				<remove value=" "/>
+				<remove value="$"/>
+				<remove value="~"/>
+				<remove value="("/>
+				<remove value=")"/>
+			</valid>
+			<mapping initial="none">
+				<add source="&amp;" target="&amp;#38;"/>
+				<add source=":" target="&amp;#58;"/>
+				<add source="/" target="&amp;#47;"/>
+				<add source=" " target="&amp;#32;"/>
+				<add source="$" target="&amp;#36;"/>
+				<add source="~" target="&amp;#126;"/>
+				<add source="~" target="&amp;#126;"/>
+				<add source=")" target="&amp;#41;"/>
+				<add source="(" target="&amp;#40;"/>
+			</mapping>
+		</sanitizer>
+	</xml>
+</macros>
